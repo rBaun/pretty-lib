@@ -1,6 +1,7 @@
 @import 'shared/variables.css';
 @import 'shared/fonts.css';
 @import 'shared/header.css';
+@import 'shared/buttons.css';
 
 :root {
     font-family: 'Montserrat';
@@ -26,4 +27,9 @@ body {
 
 .inner-container {
     margin: 0 2rem;
+}
+
+.page-header {
+    font-size: 2rem;
+    font-weight: 500;
 }
