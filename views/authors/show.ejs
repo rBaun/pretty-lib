@@ -1,11 +1,13 @@
+<!-- Author -->
 <h2 class="page-header"><%= author.name %></h2>
 <div class="btn-row">
   <a class="btn btn-primary" href="/authors/<%= author.id %>/edit">Edit</a>
   <%- include('../partials/deleteForm',
               { url: `/authors/${author.id}` }) %>
-  <% if (booksByAuthor.length > 0) { %>
-</div>
+</div> <!-- //author -->
 
-  <h2 class="page-header">Books By Author</h2>
+<!-- Books by Author -->
+<% if (booksByAuthor.length > 0) { %>
+  <h2 class="page-header">Books by Author</h2>
   <%- include('../partials/bookGrid', { books: booksByAuthor }) %>
-<% } %>
+<% } %> <!-- //books by author -->

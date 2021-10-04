@@ -1,5 +1,6 @@
 <h2 class="page-header"><%= book.title %></h2>
 <div class="book-details">
+    <!-- Book Cover Image & Action Buttons -->
     <div>
         <img class="book-details-book-cover" src="<%= book.coverImagePath %>">
         <div class="book-details-btn-grid">
@@ -7,8 +8,9 @@
             <%- include('../partials/deleteForm', { url: `/books/${book.id}`}) %> 
             <a class="btn btn-primary book-details-author-button" href="/authors/<%= book.author.id %>">VIEW AUTHOR</a>
         </div>
-    </div>
+    </div> <!-- //book cover image & action buttons  -->
     
+    <!-- Book Detailed Information -->
     <div class="book-details-grid">
         <div class="book-details-label">Author: </div>
         <div><%= book.author.name %></div>
@@ -18,7 +20,7 @@
         <div><%= book.pageCount %></div>
         <div class="book-details-label">Description: </div>
         <div><%= book.description %></div>
-    </div>
+    </div> <!-- //book detailed information  -->
     
 
     
