@@ -3,103 +3,123 @@ const router = express.Router();
 const Author = require('../models/author')
 const Book = require('../models/book')
 
-// GET: All Authors
-router.get('/', async (request, response) => {
-    let searchOptions = {};
-    if (request.query.name != null && request.query.name !== '') {
-        searchOptions.name = new RegExp(request.query.name, 'i')
-    }
+// GET: Search Authors
+router.get('/', async (req, res) => {
+    let searchOptions = setSearchOptions(req);
+
     try {
         const authors = await Author.find(searchOptions)
-        response.render('authors/index', {
+        res.render('authors/index', {
             authors: authors,
-            searchOptions: request.query
+            searchOptions: req.query
         })
-    } catch (error) {
-        response.redirect('/')
+    } catch {
+        res.redirect('/')
     }
-});
+})
 
-// GET: New Author Form
-router.get('/new', (request, response) => {
-    response.render('authors/new', { author: new Author() });
-});
+// GET: New Author Form Page
+router.get('/new', (req, res) => {
+    res.render('authors/new', { author: new Author() })
+})
 
 // POST: Create Author
-router.post('/', async (request, response) => {
+router.post('/', async (req, res) => {
     const author = new Author({
-        name: request.body.name
+        name: req.body.name
     })
+    let errorMessage = generateAuthorErrorMessage(author, req, 'create')
+
     try {
-        const newAuthor = await author.save()
-        response.redirect(`authors/${newAuthor.id}`)
-    } catch (error) {
-        response.render('authors/new', {
+        if(errorMessage != null) { throw new Error(errorMessage) }
+
+        const createdAuthor = await author.save()
+        res.redirect(`authors/${createdAuthor.id}`)
+    } catch {
+        res.render('authors/new', {
             author: author,
-            errorMessage: 'Error occured while attempting to create Author'
+            errorMessage: errorMessage
         })
     }
-});
+})
 
 // GET: Show Author
-router.get('/:id', async (request, response) => {
+router.get('/:id', async (req, res) => {
     try {
-        const author = await Author.findById(request.params.id)
-        const books = await Book.find({ author: author.id }).limit(6).exec()
+        const author = await Author.findById(req.params.id)
+        const authorBooks = await Book.find({ author: author.id }).limit(6).exec()
         
-        response.render('authors/show', { 
+        res.render('authors/show', { 
             author: author, 
-            booksByAuthor: books 
+            booksByAuthor: authorBooks 
         })
-    } catch (error) {
-        response.redirect('/')
+    } catch {
+        res.redirect('/')
     }
 })
 
 // GET: Edit Author
-router.get('/:id/edit', async (request, response) => {
+router.get('/:id/edit', async (req, res) => {
     try {
-        const author = await Author.findById(request.params.id)
-        response.render('authors/edit', { author: author });
-    } catch (error) {
-        response.redirect('authors')
+        const author = await Author.findById(req.params.id)
+
+        res.render('authors/edit', { author: author })
+    } catch {
+        res.redirect('authors')
     }
 })
 
 // PUT: Update Author
-router.put('/:id', async (request, response) => {
-    let author;
-    try {
-        author = await Author.findById(request.params.id)
-        author.name = request.body.name
+router.put('/:id', async (req, res) => {
+    let author
+    let errorMessage
+
+    updateAuthor: try {
+        author = await Author.findById(req.params.id)
+        author.name = req.body.name
+        errorMessage = generateAuthorErrorMessage(author, req, 'update')
+        if(errorMessage != null) { throw new Error(errorMessage) }
+        
         await author.save()
-        response.redirect(`/authors/${author.id}`)
-    } catch (error) {
-        if (author == null) {
-            response.redirect('/')
-        } else {
-            response.render('authors/new', {
-                author: author,
-                errorMessage: 'Error occured while attempting to update Author'
-            })
-        }
+        res.redirect(`/authors/${author.id}`)
+    } catch {
+        if( author == null ) { res.redirect('/'); break updateAuthor }
+
+        res.render('authors/edit', { 
+            author: author,
+            errorMessage: errorMessage
+        })
     }
 })
 
 // DELETE: Delete Author
-router.delete('/:id', async (request, response) => {
-    let author;
-    try {
-        author = await Author.findById(request.params.id)
+router.delete('/:id', async (req, res) => {
+    let author
+    removeAuthor: try {
+        author = await Author.findById(req.params.id)
         await author.remove()
-        response.redirect(`/authors`)
-    } catch (error) {
-        if (author == null) {
-            response.redirect('/')
-        } else {
-            response.redirect(`/authors/${author.id}`)
-        }
+        res.redirect(`/authors`)
+    } catch {
+        if (author == null) { res.redirect('/'); break removeAuthor }
+
+        res.redirect(`/authors/${author.id}`)
     }
 })
 
-module.exports = router;
+function setSearchOptions(request) {
+    if (request.query.name != null && request.query.name !== '') {
+        return { name: new RegExp(request.query.name, 'i') }
+    }
+
+    return {}
+}
+
+function generateAuthorErrorMessage(author, req, action) {
+    if(req.body.name == '') { return 'Error: Author name can not be empty' }
+    if(!isNaN(req.body.name)) { return 'Error: Author name can not be a number' }
+    if(author == null) { return `Error: Unable to ${action} Author` }
+
+    return null
+}
+
+module.exports = router
