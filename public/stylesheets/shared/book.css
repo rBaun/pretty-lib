@@ -4,9 +4,15 @@
     --book-cover-aspect-ratio: 0.75;
 }
 
-.book-cover {
+.book-cover,
+.book-cover-input,
+.book-details-book-cover {
     width: var(--book-cover-width);
     height: calc(var(--book-cover-width) / var(--book-cover-aspect-ratio));
+}
+
+.book-cover:hover {
+    opacity: 40%;
 }
 
 .book-cover-large {
