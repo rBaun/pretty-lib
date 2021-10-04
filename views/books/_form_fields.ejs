@@ -5,13 +5,13 @@
 <div class="author">
     <label>Author</label>
     <select name="author">
-        <% authors.forEach(author=> { %>
-            <% if(author.id===book.author) { %>
+        <% authors.forEach(author => { %>
+            <% if(author.id == book.author) { %>
                 <option selected label="<%= author.name %>" value="<%= author.id %>">
-                    <% } else { %>
+            <% } else { %>
                 <option label="<%= author.name %>" value="<%= author.id %>">
-                    <% } %>
-                        <% }) %>
+            <% } %>
+        <% }) %>
     </select>
     <% authors %>
 </div>
