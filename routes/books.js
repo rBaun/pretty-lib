@@ -5,28 +5,17 @@ const Author = require('../models/author')
 const imageMimeTypes = ['image/jpeg','image/png','image/gif']
 
 // GET: All Books
-router.get('/', async (request, response) => {
-    let query = Book.find();
-    if(request.query.title != null && request.query.title != ''){
-        query = query.regex('title', new RegExp(request.query.title, 'i'))
-    }
-
-    if(request.query.publishedBefore != null && request.query.publishedBefore != ''){
-        query = query.lte('publishedOn', request.query.publishedBefore)
-    }
-
-    if(request.query.publishedAfter != null && request.query.publishedAfter != ''){
-        query = query.gte('publishedOn', request.query.publishedAfter)
-    }
+router.get('/', async (req, res) => {
+    let query = findBooks(req);
 
     try {
         const books = await query.exec();
-        response.render('books/index', {
+        res.render('books/index', {
             books: books,
-            searchOptions: request.query
+            searchOptions: req.query
         })
-    } catch (error) {
-        response.redirect('/');   
+    } catch {
+        res.redirect('/');   
     }
 })
 
@@ -123,6 +112,21 @@ router.delete('/:id', async (request, response) => {
         }
     }
 })
+
+function findBooks(request) {
+    let query = Book.find()
+
+    if(request.query.title) { return query.regex('title', new RegExp(request.query.title, 'i'))}
+    if(request.query.publishedBefore && request.query.publishedAfter) { 
+        return query.where('publishedOn')
+                        .gte(request.query.publishedAfter)
+                        .lte(request.query.publishedBefore)
+    }
+    if(request.query.publishedBefore){ return query.lte('publishedOn', request.query.publishedBefore)}
+    if(request.query.publishedAfter){ return query.gte('publishedOn', request.query.publishedAfter) }
+
+    return query
+}
 
 async function renderNewPage(response, book, hasError = false) {
     renderFormPage(response, book, 'new', hasError)
