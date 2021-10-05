@@ -113,6 +113,13 @@ router.delete('/:id', async (req, res) => {
 function findBooks(req) {
     let query = Book.find()
 
+    if(req.query.title && req.query.publishedBefore && req.query.publishedAfter) {
+        return query.where('publishedOn')
+                        .gte(req.query.publishedAfter)
+                        .lte(req.query.publishedBefore)
+                    .where('title')
+                        .regex(new RegExp(req.query.title, 'i'))
+    }
     if(req.query.title) { return query.regex('title', new RegExp(req.query.title, 'i'))}
     if(req.query.publishedBefore && req.query.publishedAfter) { 
         return query.where('publishedOn')
