@@ -7,7 +7,7 @@
     --color-btn-primary-background-dark: hsl(var(--color-base-hue), 100%, 73%);
     --color-btn-primary-text: hsl(var(--color-base-hue), 100%, 20%);
     --color-btn-primary-text-dark: hsl(var(--color-base-hue), 100%, 10%);
-    
+
     /* Danger Button */
     --color-btn-danger-background: hsl(var(--color-danger-hue), 100%, 83%);
     --color-btn-danger-background-dark: hsl(var(--color-danger-hue), 100%, 73%);
@@ -31,11 +31,11 @@
     align-items: flex-start;
 }
 
-.btn-row > * {
+.btn-row>* {
     margin-left: 1rem;
 }
 
-.btn-row > *:first-child {
+.btn-row>*:first-child {
     margin-left: 0;
 }
 

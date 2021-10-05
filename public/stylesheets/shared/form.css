@@ -30,7 +30,7 @@
     flex-grow: 0;
 }
 
-.form-item > label {
+.form-item>label {
     font-size: var(--form-label-font-size);
     margin-bottom: 0.25rem;
     margin-left: 0.25rem;

@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
     let errorMessage = generateAuthorErrorMessage(author, req, 'create')
 
     try {
-        if(errorMessage != null) { throw new Error(errorMessage) }
+        if (errorMessage != null) { throw new Error(errorMessage) }
 
         const createdAuthor = await author.save()
         res.redirect(`authors/${createdAuthor.id}`)
@@ -48,10 +48,10 @@ router.get('/:id', async (req, res) => {
     try {
         const author = await Author.findById(req.params.id)
         const authorBooks = await Book.find({ author: author.id }).limit(6).exec()
-        
-        res.render('authors/show', { 
-            author: author, 
-            booksByAuthor: authorBooks 
+
+        res.render('authors/show', {
+            author: author,
+            booksByAuthor: authorBooks
         })
     } catch {
         res.redirect('/')
@@ -78,14 +78,14 @@ router.put('/:id', async (req, res) => {
         author = await Author.findById(req.params.id)
         author.name = req.body.name
         errorMessage = generateAuthorErrorMessage(author, req, 'update')
-        if(errorMessage != null) { throw new Error(errorMessage) }
-        
+        if (errorMessage != null) { throw new Error(errorMessage) }
+
         await author.save()
         res.redirect(`/authors/${author.id}`)
     } catch {
-        if( author == null ) { res.redirect('/'); break updateAuthor }
+        if (author == null) { res.redirect('/'); break updateAuthor }
 
-        res.render('authors/edit', { 
+        res.render('authors/edit', {
             author: author,
             errorMessage: errorMessage
         })
@@ -115,9 +115,9 @@ function setSearchOptions(request) {
 }
 
 function generateAuthorErrorMessage(author, req, action) {
-    if(req.body.name == '') { return 'Error: Author name can not be empty' }
-    if(!isNaN(req.body.name)) { return 'Error: Author name can not be a number' }
-    if(author == null) { return `Error: Unable to ${action} Author` }
+    if (req.body.name == '') { return 'Error: Author name can not be empty' }
+    if (!isNaN(req.body.name)) { return 'Error: Author name can not be a number' }
+    if (author == null) { return `Error: Unable to ${action} Author` }
 
     return null
 }
